@@ -35,7 +35,7 @@ namespace RailgunNet.Connection.Server
         ///     All client controllers involved in this room.
         ///     Does not include the server's controller.
         /// </summary>
-        private readonly HashSet<RailPeer> clients;
+        public HashSet<RailPeer> Clients { get; }
 
         /// <summary>
         ///     The local Railgun server.
@@ -52,7 +52,7 @@ namespace RailgunNet.Connection.Server
             ToUpdate = new List<RailEntityServer>();
             ToRemove = new List<RailEntityServer>();
 
-            clients = new HashSet<RailPeer>();
+            Clients = new HashSet<RailPeer>();
             this.server = server;
         }
 
@@ -132,7 +132,7 @@ namespace RailgunNet.Connection.Server
             ushort attempts = 3,
             bool freeWhenDone = true)
         {
-            foreach (RailPeer client in clients)
+            foreach (RailPeer client in Clients)
             {
                 client.SendEvent(evnt, attempts, true);
             }
@@ -142,16 +142,20 @@ namespace RailgunNet.Connection.Server
                 evnt.Free();
             }
         }
+        public T CreateEvent<T>() where T : RailEvent
+        {
+            return Resource.CreateEvent<T>();
+        }
 
         public void AddClient(RailPeer client)
         {
-            clients.Add(client);
+            Clients.Add(client);
             OnClientJoined(client);
         }
 
         public void RemoveClient(RailPeer client)
         {
-            clients.Remove(client);
+            Clients.Remove(client);
             OnClientLeft(client);
         }
 
